@@ -101,8 +101,7 @@ namespace VisualScript
             };
 
             this.Controls.Add(listBox);
-
-            // Setze die Position und Größe der Steuerelemente
+            
             addButton.Location = new Point(10, 10);
             removeButton.Location = new Point(100, 10);
             listBox.Location = new Point(10, 40);
@@ -112,8 +111,6 @@ namespace VisualScript
 
         private void AddButton_Click(object sender, EventArgs e)
         {
-            // Hier können Sie Logik zum Hinzufügen von Ports implementieren
-            // Zum Beispiel: Fügen Sie einen neuen Port zur Liste hinzu
             if (_inputPorts != null)
             {
                 _inputPorts.Add(new InputPort(self, "Neues Input"));
@@ -128,8 +125,6 @@ namespace VisualScript
 
         private void RemoveButton_Click(object sender, EventArgs e)
         {
-            // Hier können Sie Logik zum Entfernen von Ports implementieren
-            // Zum Beispiel: Entfernen Sie den ausgewählten Port aus der Liste
             if (listBox.SelectedItem != null)
             {
                 if (_inputPorts != null)
@@ -174,17 +169,14 @@ namespace VisualScript
 
             if (editorService != null)
             {
-                // Öffne das benutzerdefinierte Formular, wenn auf die Eigenschaft geklickt wird
                 using (CustomForm customForm = new CustomForm(value, ownerNode))
                 {
                     if (editorService.ShowDialog(customForm) == DialogResult.OK)
                     {
-                        // Aktualisiere den Wert nach der Auswahl im Formular
                         value = customForm.SelectedPort; // Du musst entsprechend dein Formular anpassen
                     }
                 }
             }
-
             return value;
         }
     }
@@ -209,7 +201,6 @@ namespace VisualScript
             if (value is List<InputPort>)
             {
 
-                // Konvertiere die Liste von Ports in eine Zeichenkette
                 List<InputPort> ports = (List<InputPort>)value;
                 return string.Join(", ", ports.Select(port => $"{port.OwnerNode.Name} ({port.Name})"));
 
@@ -217,7 +208,6 @@ namespace VisualScript
             else if (value is List<OutputPort>)
             {
 
-                // Konvertiere die Liste von Ports in eine Zeichenkette
                 List<OutputPort> ports = (List<OutputPort>)value;
                 return string.Join(", ", ports.Select(port => $"{port.OwnerNode.Name} ({port.Name})"));
 
