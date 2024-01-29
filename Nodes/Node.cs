@@ -27,10 +27,10 @@ namespace VisualScript.Nodes
         public virtual int Y { get; set; } = 10;
 
         [Browsable(false)]
-        public virtual int Width { get; } = 100;
+        public virtual int Width { get; set; } = 100;
 
         [Browsable(false)]
-        public virtual int Height { get; } = 40;
+        public virtual int Height { get; set; } = 40;
 
         [Browsable(false)]
         public Rectangle Bounds => new Rectangle(X, Y, Width, Height);
