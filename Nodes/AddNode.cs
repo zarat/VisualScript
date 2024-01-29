@@ -56,7 +56,6 @@ namespace VisualScript.Nodes
         public AddNode()
         {
             InputPorts.Add(new InputPort(this, "Input 1"));
-            InputPorts.Add(new InputPort(this, "Input 2"));
             OutputPorts.Add(new OutputPort(this, "Output 1"));
         }
 
@@ -74,7 +73,7 @@ namespace VisualScript.Nodes
             // Draw Output Ports
             foreach (var inputPort in InputPorts)
             {
-                e.Graphics.FillEllipse(Brushes.Red, inputPort.Bounds);
+                e.Graphics.FillEllipse(Brushes.Blue, inputPort.Bounds);
             }
 
             // Draw Output Ports
