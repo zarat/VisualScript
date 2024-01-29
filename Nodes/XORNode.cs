@@ -24,7 +24,6 @@ namespace VisualScript.Nodes
         public XORNode()
         {
             InputPorts.Add(new InputPort(this, "Input 1"));
-            InputPorts.Add(new InputPort(this, "Input 2"));
             OutputPorts.Add(new OutputPort(this, "Output 1"));
         }
         public override void UpdateValue()

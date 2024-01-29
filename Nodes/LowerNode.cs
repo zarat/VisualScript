@@ -80,7 +80,7 @@ namespace VisualScript.Nodes
             // Draw Output Ports
             foreach (var inputPort in InputPorts)
             {
-                e.Graphics.FillEllipse(Brushes.Red, inputPort.Bounds);
+                e.Graphics.FillEllipse(Brushes.Blue, inputPort.Bounds);
             }
 
             // Draw Output Ports
