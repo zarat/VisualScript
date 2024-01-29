@@ -15,10 +15,7 @@ namespace VisualScript.Ports
         public OutputPort(Node ownerNode, string name) : base(ownerNode, name)
         {
         }
-        public override Point Location => new Point(
-            OwnerNode.X + OwnerNode.Width,
-            OwnerNode.Y + (OwnerNode.OutputPorts.IndexOf(this) + 1) * portSpacing
-        );
+        public override Point Location => new Point(OwnerNode.X + OwnerNode.Width, OwnerNode.Y + (OwnerNode.OutputPorts.IndexOf(this)) * portSpacing);
     }
 
 }
