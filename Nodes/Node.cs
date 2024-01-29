@@ -37,10 +37,12 @@ namespace VisualScript.Nodes
 
         [Browsable(true)]
         [Description("Eingehende Ports")]
+        [Editor(typeof(PortListEditor), typeof(UITypeEditor))]
         public virtual List<InputPort> InputPorts { get; set; } = new List<InputPort>();
 
         [Browsable(true)]
         [Description("Ausgehende Ports")]
+        [Editor(typeof(PortListEditor), typeof(UITypeEditor))]
         public virtual List<OutputPort> OutputPorts { get; set; } = new List<OutputPort>();
 
         [Browsable(true)]
