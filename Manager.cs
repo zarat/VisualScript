@@ -2,6 +2,13 @@
 
 using VisualScript.Nodes;
 using VisualScript.Connectors;
+using System.ComponentModel;
+using System.Drawing.Design;
+using System.Linq;
+using System.Windows.Forms;
+using System;
+using VisualScript.Ports;
+using System.Drawing;
 
 namespace VisualScript
 {
@@ -11,13 +18,13 @@ namespace VisualScript
 
         private static Manager instance;
 
-        public List<Node> nodes;
+        public List<BasicNode> nodes;
         public List<Connector> connectors;
 
         public Manager()
         {
 
-            nodes = new List<Node>();
+            nodes = new List<BasicNode>();
             connectors = new List<Connector>();
 
         }
@@ -35,6 +42,162 @@ namespace VisualScript
             }
         }
 
+        /// <summary>
+        /// Render connectors and nodes
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void Render(object sender, PaintEventArgs e)
+        {
+            foreach (var connector in connectors)
+            {
+                connector.Paint(sender, e);
+            }
+            foreach (BasicNode node in nodes)
+            {
+                node.Paint(sender, e);
+            }
+        }
+
+        public void ConnectPorts(Port startPort, Port endPort)
+        {
+            if (endPort is OutputPort || startPort is InputPort)
+            {
+                MessageBox.Show("Eine Verbindung muss von einem blauen Input starten und bei einem roten Output enden.");
+                return;
+            }
+            startPort.Connected = true;
+            endPort.Connected = true;
+            connectors.Add(new Connector { StartPort = startPort, EndPort = endPort });
+            UpdateValues();
+            UpdateConnectors();
+        }
+
+        /// <summary>
+        /// Make it good
+        /// </summary>
+        public void UpdateConnectors()
+        {
+
+            /*
+            foreach (var node in nodes)
+            {
+                foreach (var outputPort in node.OutputPorts)
+                {
+                    foreach (var inputPort in node.InputPorts)
+                    {
+                        if (outputPort.Connected && inputPort.Connected)
+                        {
+                            connectors.Add(new Connector { StartPort = outputPort, EndPort = inputPort });
+                        }
+                    }
+                }
+            }
+            */
+
+        }
+
+        public void UpdateValues()
+        {
+            foreach (BasicNode n in nodes)
+            {
+                n.UpdateValue();
+            }
+        }
+
+        public List<BasicNode> MatchNode(object sender, MouseEventArgs e)
+        {
+            List<BasicNode> list = new List<BasicNode>();
+            foreach (var node in nodes)
+            {
+                if (node.Bounds.Contains(e.Location))
+                {
+                    list.Add(node);
+                }
+            }
+            return list;
+        }
+        
+        public List<Port> MatchPort(object sender, MouseEventArgs e)
+        {
+            List<Port> list = new List<Port>();
+            foreach (var node in nodes)
+            {
+                var clickedPort = node.InputPorts.Concat<Port>(node.OutputPorts).FirstOrDefault(port => port.Bounds.Contains(e.Location));
+                if (clickedPort != null)
+                {
+                    list.Add(clickedPort);
+                }
+            }
+            return list;
+        }
+        
+        public List<Connector> MatchConnector(object sender, MouseEventArgs e)
+        {
+            List<Connector> list = new List<Connector>();
+            foreach (var connector in Manager.Instance.connectors)
+            {
+                //var connectorBounds = GetConnectorBounds(connector);
+                //if (connectorBounds.Contains(e.Location))
+                if (IsPointOnConnector(e.Location, connector))
+                {
+                    list.Add(connector);
+                }
+            }
+            return list;
+        }
+
+        public bool IsPointOnConnector(Point clickPoint, Connector connector)
+        {
+            var _startPoint = connector.StartPort.Location;
+            var _endPoint = connector.EndPort.Location;
+            var startPoint = _startPoint;
+            var endPoint = _endPoint;
+            startPoint.X += 5;
+            startPoint.Y += 5;
+            endPoint.X += 5;
+            endPoint.Y += 5;
+
+            // Überprüfen, ob der Klickpunkt in der Nähe der Linie liegt
+            float distance = DistancePointToLine(clickPoint, startPoint, endPoint);
+            return distance < 5; // Ändern Sie den Schwellenwert nach Bedarf
+        }
+
+        public  float DistancePointToLine(Point point, Point lineStart, Point lineEnd)
+        {
+            float a = point.X - lineStart.X;
+            float b = point.Y - lineStart.Y;
+            float c = lineEnd.X - lineStart.X;
+            float d = lineEnd.Y - lineStart.Y;
+
+            float dot = a * c + b * d;
+            float len_sq = c * c + d * d;
+            float param = dot / len_sq;
+
+            float xx, yy;
+
+            if (param < 0)
+            {
+                xx = lineStart.X;
+                yy = lineStart.Y;
+            }
+            else if (param > 1)
+            {
+                xx = lineEnd.X;
+                yy = lineEnd.Y;
+            }
+            else
+            {
+                xx = lineStart.X + param * c;
+                yy = lineStart.Y + param * d;
+            }
+
+            float dx = point.X - xx;
+            float dy = point.Y - yy;
+            return (float)Math.Sqrt(dx * dx + dy * dy);
+        }
+
+
     }
 
     #region Editor Stuff
@@ -51,9 +214,9 @@ namespace VisualScript
         private List<InputPort> _inputPorts;
         private List<OutputPort> _outputPorts;
         public object SelectedPort => selectedPort;
-        public Node self;
+        public BasicNode self;
 
-        public CustomForm(object value, Node ownerNode)
+        public CustomForm(object value, BasicNode ownerNode)
         {
 
             self = ownerNode;
@@ -101,7 +264,8 @@ namespace VisualScript
             };
 
             this.Controls.Add(listBox);
-            
+
+            // Setze die Position und Größe der Steuerelemente
             addButton.Location = new Point(10, 10);
             removeButton.Location = new Point(100, 10);
             listBox.Location = new Point(10, 40);
@@ -111,6 +275,8 @@ namespace VisualScript
 
         private void AddButton_Click(object sender, EventArgs e)
         {
+            // Hier können Sie Logik zum Hinzufügen von Ports implementieren
+            // Zum Beispiel: Fügen Sie einen neuen Port zur Liste hinzu
             if (_inputPorts != null)
             {
                 _inputPorts.Add(new InputPort(self, "Neues Input"));
@@ -125,6 +291,8 @@ namespace VisualScript
 
         private void RemoveButton_Click(object sender, EventArgs e)
         {
+            // Hier können Sie Logik zum Entfernen von Ports implementieren
+            // Zum Beispiel: Entfernen Sie den ausgewählten Port aus der Liste
             if (listBox.SelectedItem != null)
             {
                 if (_inputPorts != null)
@@ -165,18 +333,21 @@ namespace VisualScript
         {
             System.Windows.Forms.Design.IWindowsFormsEditorService editorService = (System.Windows.Forms.Design.IWindowsFormsEditorService)provider.GetService(typeof(System.Windows.Forms.Design.IWindowsFormsEditorService));
 
-            Node ownerNode = context.Instance as Node;
+            BasicNode ownerNode = context.Instance as BasicNode;
 
             if (editorService != null)
             {
+                // Öffne das benutzerdefinierte Formular, wenn auf die Eigenschaft geklickt wird
                 using (CustomForm customForm = new CustomForm(value, ownerNode))
                 {
                     if (editorService.ShowDialog(customForm) == DialogResult.OK)
                     {
+                        // Aktualisiere den Wert nach der Auswahl im Formular
                         value = customForm.SelectedPort; // Du musst entsprechend dein Formular anpassen
                     }
                 }
             }
+
             return value;
         }
     }
@@ -185,7 +356,7 @@ namespace VisualScript
     /// Macht die Anzeige einer List(Port) zu einem String
     /// </summary>
     /// \todo
-    public class PortListTypeConverter : TypeConverter
+    public class PortListConverter : TypeConverter
     {
         public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
         {
@@ -201,6 +372,7 @@ namespace VisualScript
             if (value is List<InputPort>)
             {
 
+                // Konvertiere die Liste von Ports in eine Zeichenkette
                 List<InputPort> ports = (List<InputPort>)value;
                 return string.Join(", ", ports.Select(port => $"{port.OwnerNode.Name} ({port.Name})"));
 
@@ -208,6 +380,7 @@ namespace VisualScript
             else if (value is List<OutputPort>)
             {
 
+                // Konvertiere die Liste von Ports in eine Zeichenkette
                 List<OutputPort> ports = (List<OutputPort>)value;
                 return string.Join(", ", ports.Select(port => $"{port.OwnerNode.Name} ({port.Name})"));
 
@@ -220,6 +393,5 @@ namespace VisualScript
     }
 
     #endregion
-
 
 }

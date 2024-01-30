@@ -18,6 +18,16 @@ namespace VisualScript.Nodes
 
         public IfNode()
         {
+
+            // Create a quad by default
+            points = new Point[]
+            {
+                new Point(-50, -50),
+                new Point(-50, 50),
+                new Point(50, 50),
+                new Point(50, -50)
+            };
+
             InputPorts.Add(new InputPort(this, "Input 1"));
             OutputPorts.Add(new OutputPort(this, "Output 1"));
         }
@@ -32,7 +42,7 @@ namespace VisualScript.Nodes
                 if (c.EndPort.OwnerNode == this)
                 {
 
-                    if (!string.IsNullOrEmpty(c.StartPort.OwnerNode.Value) && c.StartPort.OwnerNode.Value == "1")
+                    if (!string.IsNullOrEmpty(c.StartPort.OwnerNode.Value) && c.StartPort.OwnerNode.Value != "0")
                     {
 
                         i = true;

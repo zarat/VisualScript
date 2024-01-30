@@ -20,6 +20,16 @@ namespace VisualScript.Nodes
 
         public ORNode()
         {
+
+            // Create a quad by default
+            points = new Point[]
+            {
+                new Point(-50, -50),
+                new Point(-50, 50),
+                new Point(50, 50),
+                new Point(50, -50)
+            };
+
             InputPorts.Add(new InputPort(this, "Input 1"));
             OutputPorts.Add(new OutputPort(this, "Output 1"));
         }

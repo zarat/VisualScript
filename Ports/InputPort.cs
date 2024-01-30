@@ -11,11 +11,15 @@ namespace VisualScript.Ports
     [Serializable]
     public class InputPort : Port
     {
+
         public InputPort() { }
-        public InputPort(Node ownerNode, string name) : base(ownerNode, name)
+
+        public InputPort(BasicNode ownerNode, string name) : base(ownerNode, name)
         {
         }
-        public override Point Location => new Point( OwnerNode.X - 10, OwnerNode.Y + (OwnerNode.InputPorts.IndexOf(this)) * portSpacing );
+
+        public override Point Location => new Point( OwnerNode.CalculateBoundingBox().X - 10, OwnerNode.CalculateBoundingBox().Y + (OwnerNode.InputPorts.IndexOf(this)) * portSpacing );
+    
     }
 
 }

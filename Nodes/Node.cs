@@ -1,64 +1,72 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-
 using System.Windows.Forms;
-using System.Drawing.Design;
-using System.Xml.Serialization;
 
-using VisualScript;
-using VisualScript.Ports;
 using VisualScript.Connectors;
+using VisualScript.Ports;
+using VisualScript;
+using System.Drawing.Drawing2D;
+using System.Collections.Generic;
 
 namespace VisualScript.Nodes
 {
-
     [Serializable]
-    [XmlInclude(typeof(AddNode))]
-    [XmlInclude(typeof(VariableNode))]
-    public abstract class Node
+    public class Node : BasicNode
     {
 
-        [Browsable(false)]
-        public virtual int X { get; set; } = 10;
+        public override string Name { get; set; } = "Empty Node";
 
-        [Browsable(false)]
-        public virtual int Y { get; set; } = 10;
+        public override string Type { get; set; }
 
-        [Browsable(false)]
-        public virtual int Width { get; set; } = 100;
+        public override string Value { get; set; }
 
-        [Browsable(false)]
-        public virtual int Height { get; set; } = 40;
+        public override void UpdateValue()
+        {
+            
+        }
 
-        [Browsable(false)]
-        public Rectangle Bounds => new Rectangle(X, Y, Width, Height);
+        public Node()
+        {
 
-        [Browsable(true)]
-        [Description("Eingehende Ports")]
-        [Editor(typeof(PortListEditor), typeof(UITypeEditor))]
-        public virtual List<InputPort> InputPorts { get; set; } = new List<InputPort>();
+            // Create a quad by default
+            points = new Point[]
+            {
+                new Point(-50, -50),
+                new Point(-50, 50),
+                new Point(50, 50),
+                new Point(50, -50)
+            };
 
-        [Browsable(true)]
-        [Description("Ausgehende Ports")]
-        [Editor(typeof(PortListEditor), typeof(UITypeEditor))]
-        public virtual List<OutputPort> OutputPorts { get; set; } = new List<OutputPort>();
+        }
 
-        [Browsable(true)]
-        [Description("Der Name des Node")]
-        public virtual string Name { get; set; }
+        public override void Paint(object sender, PaintEventArgs e)
+        {
 
-        [Browsable(true)]
-        public virtual string Type { get; set; } = "Undefined";
+            // Zeichnen des Vielecks relativ zum Ursprung
+            e.Graphics.DrawPolygon(Pens.Black, TranslatedPoints());
+            
+            // Draw Output Ports
+            foreach (var inputPort in InputPorts)
+            {
+                e.Graphics.FillEllipse(Brushes.Blue, inputPort.Bounds);
+            }
 
-        [Browsable(true)]
-        public virtual string Value { get; set; } = null;
+            // Draw Output Ports
+            foreach (var outputPort in OutputPorts)
+            {
+                e.Graphics.FillEllipse(Brushes.Red, outputPort.Bounds);
+            }
 
-        public abstract void Paint(object sender, PaintEventArgs e);
+            // Umschließendes Quadrat zeichnen
+            if (points.Length > 0)
+            {
+                //Rectangle boundingBox = CalculateBoundingBox();
+                //e.Graphics.DrawRectangle(Pens.Red, boundingBox);
+            }
 
-        public abstract void UpdateValue();
-
+        }
+  
+        
     }
 
 }
