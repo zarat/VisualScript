@@ -14,10 +14,48 @@ using VisualScript.Connectors;
 namespace VisualScript.Nodes
 {
 
+    /// <summary>
+    /// The type of a variable.
+    /// </summary>
+    public enum VariableType
+    {
+        /// <summary>
+        /// Undefined
+        /// </summary>
+        Undefined,
+        /// <summary>
+        /// Boolean
+        /// </summary>
+        Boolean,
+        /// <summary>
+        /// Char
+        /// </summary>
+        Char,
+        /// <summary>
+        /// Integer
+        /// </summary>
+        Integer,
+        /// <summary>
+        /// Float
+        /// </summary>
+        Float,
+        /// <summary>
+        /// Double
+        /// </summary>
+        Double,
+        /// <summary>
+        /// String
+        /// </summary>
+        String
+    }
+
+    /// <summary>
+    /// An abstract basic node. Allmost all other nodes inherit from this node.
+    /// </summary>
     [Serializable]
     [XmlInclude(typeof(AddNode))]
     [XmlInclude(typeof(VariableNode))]
-    public abstract class BasicNode
+    public abstract class BasicNode 
     {
 
         [Browsable(false)]
@@ -35,23 +73,56 @@ namespace VisualScript.Nodes
         [Browsable(false)]
         public Rectangle Bounds => CalculateBoundingBox(); // new Rectangle(X, Y, Width, Height);
 
+        /// <summary>
+        /// The <seealso cref="InputPort"/>s of the node. 
+        /// </summary>
+        /// \todo Move this to <seealso cref="Node"/> instead on <seealso cref="BasicNode"/>.
         [Browsable(true)]
         [Description("Eingehende Ports")]
         [Editor(typeof(PortListEditor), typeof(UITypeEditor))]
-        [TypeConverter(typeof(PortListConverter))]
+        //[TypeConverter(typeof(PortListConverter))]
         public virtual List<InputPort> InputPorts { get; set; } = new List<InputPort>();
 
+        /// <summary>
+        /// The <seealso cref="OutputPort"/>s of the node. 
+        /// </summary>
+        /// /// \todo Move this to <seealso cref="Node"/> instead on <seealso cref="BasicNode"/>.
         [Browsable(true)]
         [Description("Ausgehende Ports")]
         [Editor(typeof(PortListEditor), typeof(UITypeEditor))]
-        [TypeConverter(typeof(PortListConverter))]
+        //[TypeConverter(typeof(PortListConverter))]
         public virtual List<OutputPort> OutputPorts { get; set; } = new List<OutputPort>();
 
-        public virtual string Name { get; set; }
+        /// <summary>
+        /// The name of the node.
+        /// </summary>
+        private string _name = "Neuer Node";
+        public virtual string Name
+        {
+            get { return _name; }
+            set { _name = value; }
+        }
 
-        public virtual string Type { get; set; } = "Undefined";
+        /// <summary>
+        /// The type of this nodes value.
+        /// </summary>
+        /// \todo
+        private VariableType _type = VariableType.Undefined;
+        public virtual VariableType Type
+        {
+            get { return _type; }
+            set { _type = value; }
+        }
 
-        public virtual string Value { get; set; } = "Undefined";
+        /// <summary>
+        /// This nodes value.
+        /// </summary>
+        private string _value;
+        public virtual string Value
+        {
+            get { return _value; }
+            set { _value = value; }
+        }
 
         private Point origin;
 
@@ -139,6 +210,32 @@ namespace VisualScript.Nodes
         public abstract void Paint(object sender, PaintEventArgs e);
 
         public abstract void UpdateValue();
+
+        /// <summary>
+        /// To manually clean up the node before deleting
+        /// </summary>
+        public virtual void Dispose()
+        {
+            Value = "0";
+            // get connected connectors and remove them
+            foreach(InputPort ip in InputPorts)
+            {
+                foreach(Connector c in ip.Connectors)
+                {
+                    c.StartPort.Connected = false;
+                    Manager.Instance.connectors.Remove(c);
+                }
+            }
+            foreach (OutputPort op in OutputPorts)
+            {
+                foreach (Connector c in op.Connectors)
+                {
+                    c.EndPort.Connected = false;
+                    Manager.Instance.connectors.Remove(c);
+                }
+            }
+
+        }
 
     }
 

@@ -18,8 +18,9 @@ namespace VisualScript.Ports
         {
         }
 
-        public override Point Location => new Point( OwnerNode.CalculateBoundingBox().X - 10, OwnerNode.CalculateBoundingBox().Y + (OwnerNode.InputPorts.IndexOf(this)) * portSpacing );
-    
+        //public override Point Location => new Point( OwnerNode.CalculateBoundingBox().X - 10, OwnerNode.CalculateBoundingBox().Y + (OwnerNode.InputPorts.IndexOf(this)) * portSpacing );
+        public override Point Location => new Point(OwnerNode.CalculateBoundingBox().X - Width, OwnerNode.CalculateBoundingBox().Y + (OwnerNode.InputPorts.IndexOf(this)) * portSpacing);
+
     }
 
 }

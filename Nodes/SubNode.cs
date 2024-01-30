@@ -12,10 +12,25 @@ namespace VisualScript.Nodes
     public class SubNode : Node
     {
 
-        public override string Name { get; set; } = "Subtraction";
+        public SubNode()
+        {
 
-        public override string Type { get; set; }
-        public override string Value { get; set; }
+            Name = "Subtraction";
+            Type = VariableType.Integer;
+            Value = "0";
+
+            // Create a quad by default
+            points = new Point[]
+            {
+                new Point(-50, -50),
+                new Point(-50, 50),
+                new Point(50, 50),
+                new Point(50, -50)
+            };
+
+            InputPorts.Add(new InputPort(this, "Input 1"));
+            OutputPorts.Add(new OutputPort(this, "Output 1"));
+        }
 
         public override void UpdateValue()
         {
@@ -29,11 +44,11 @@ namespace VisualScript.Nodes
                 if (c.EndPort.OwnerNode == this)
                 {
 
-                    if (!string.IsNullOrEmpty(c.StartPort.OwnerNode.Value))
+                    if (!string.IsNullOrEmpty(c.StartPort.OwnerNode.Value.ToString()))
                     {
 
                         int x;
-                        if (!int.TryParse(c.StartPort.OwnerNode.Value, out x))
+                        if (!int.TryParse(c.StartPort.OwnerNode.Value.ToString(), out x))
                             continue;
 
                         if (counter == 0)
@@ -53,22 +68,6 @@ namespace VisualScript.Nodes
 
         }
 
-        public SubNode()
-        {
-
-            // Create a quad by default
-            points = new Point[]
-            {
-                new Point(-50, -50),
-                new Point(-50, 50),
-                new Point(50, 50),
-                new Point(50, -50)
-            };
-
-            InputPorts.Add(new InputPort(this, "Input 1"));
-            OutputPorts.Add(new OutputPort(this, "Output 1"));
-        }
-
         public override void Paint(object sender, PaintEventArgs e)
         {
 
@@ -77,7 +76,7 @@ namespace VisualScript.Nodes
             e.Graphics.DrawString(Name, Control.DefaultFont, Brushes.Black, CalculateBoundingBox());
             Point newLocation = CalculateBoundingBox().Location;
             newLocation.Y += 15;
-            e.Graphics.DrawString("Ergebnis: " + Value, Control.DefaultFont, Brushes.Black, newLocation);
+            e.Graphics.DrawString(Type.ToString() + ": " + Value, Control.DefaultFont, Brushes.Black, newLocation);
 
         }
 

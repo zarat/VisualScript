@@ -12,15 +12,24 @@ namespace VisualScript.Nodes
     public class EqualNode : BasicNode
     {
 
-        public override string Name { get; set; } = "Equal";
-
-        public override string Type { get; set; }
-        public override string Value { get; set; } = "0";
-
         public string testVal { get; set; } = "0";
 
         public EqualNode()
         {
+
+            Name = "Equals";
+            Type = VariableType.Integer;
+            Value = "0";
+
+            // Create a quad by default
+            points = new Point[]
+            {
+                new Point(-50, -50),
+                new Point(-50, 50),
+                new Point(50, 50),
+                new Point(50, -50)
+            };
+
             InputPorts.Add(new InputPort(this, "Input 1"));
             OutputPorts.Add(new OutputPort(this, "Output 1"));
         }
@@ -36,11 +45,11 @@ namespace VisualScript.Nodes
                 if (c.EndPort.OwnerNode == this)
                 {
 
-                    if (!string.IsNullOrEmpty(c.StartPort.OwnerNode.Value))
+                    if (!string.IsNullOrEmpty(c.StartPort.OwnerNode.Value.ToString()))
                     {
 
                         int x = 0;
-                        bool check1 = int.TryParse(c.StartPort.OwnerNode.Value, out x);
+                        bool check1 = int.TryParse(c.StartPort.OwnerNode.Value.ToString(), out x);
                         int y = 0;
                         bool check2 = int.TryParse(testVal, out y);
 

@@ -12,37 +12,57 @@ using VisualScript.Ports;
 
 namespace VisualScript.Connectors
 {
+
     [Serializable]
-    [XmlInclude(typeof(Port))]
     public class Connector
     {
+
+        /// <summary>
+        /// The start port of the connector.
+        /// </summary>
         [Browsable(false)]
         public Port StartPort { get; set; }
+
+        /// <summary>
+        /// The end port of the connector.
+        /// </summary>
         [Browsable(false)]
         public Port EndPort { get; set; }
 
+        /// <summary>
+        /// To indicate the starting node.
+        /// </summary>
         [Browsable(true)]
         [Category("Connector")]
         public string From
         {
-            get { return StartPort.OwnerNode.Name + "::" + StartPort.OwnerNode.Value; }
+            get { return StartPort.OwnerNode.Name + " => " + StartPort.OwnerNode.Value; }
         }
+
+        /// <summary>
+        /// To indicate the end node.
+        /// </summary>
         [Browsable(true)]
         [Category("Connector")]
         public string To
         {
-            get { return EndPort.OwnerNode.Name + "::" + EndPort.OwnerNode.Value; }
+            get { return EndPort.OwnerNode.Name + " => " + EndPort.OwnerNode.Value; }
         }
 
+        /// <summary>
+        /// Paint the connector to the forms graphics.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void Paint(object sender, PaintEventArgs e)
         {
             // Offset
             Point start = StartPort.Location;
-            start.X += 5;
-            start.Y += 5;
+            start.X += StartPort.Bounds.Width/2;
+            start.Y += StartPort.Bounds.Height/2;
             Point end = EndPort.Location;
-            end.X += 5;
-            end.Y += 5;
+            end.X += EndPort.Bounds.Width/2;
+            end.Y += EndPort.Bounds.Height/2;
             e.Graphics.DrawLine(Pens.Black, start, end);
         }
     }

@@ -12,15 +12,12 @@ namespace VisualScript.Nodes
     public class VariableNode : Node
     {
 
-        //[Browsable(true)]
-        //public virtual VariableType variableType { get; set; } = VariableType.Default;
-        public override string Name { get; set; } = "Neue Variable";
-
-        public override string Type { get; set; } = "";
-        public override string Value { get; set; } = "";
-
         public VariableNode()
         {
+
+            Name = "Variable";
+            Type = VariableType.Undefined;
+            Value = "";
 
             // Create a quad by default
             points = new Point[]
@@ -36,7 +33,13 @@ namespace VisualScript.Nodes
 
         public override void UpdateValue()
         {
-
+            foreach(InputPort ip in InputPorts)
+            {
+                if (ip.Connected)
+                {
+                    Value = ip.Connectors[0].StartPort.OwnerNode.Value;
+                }
+            }
         }
 
         public override void Paint(object sender, PaintEventArgs e)
@@ -48,7 +51,7 @@ namespace VisualScript.Nodes
 
             Rectangle newLocation = CalculateBoundingBox();
             newLocation.Y += 15;
-            e.Graphics.DrawString(Type.ToString() + ": " + Value, Control.DefaultFont, Brushes.Black, newLocation);
+            e.Graphics.DrawString(Type.ToString() + ": " + Value.ToString(), Control.DefaultFont, Brushes.Black, newLocation);
 
             /*
             // Draw Input Ports

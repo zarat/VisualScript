@@ -12,12 +12,12 @@ namespace VisualScript.Nodes
     public class IfNode : Node
     {
 
-        public override string Name { get; set; } = "Wenn";
-        public override string Type { get; set; }
-        public override string Value { get; set; }
-
         public IfNode()
         {
+
+            Name = "If";
+            Type = VariableType.Boolean;
+            Value = "0";
 
             // Create a quad by default
             points = new Point[]
@@ -36,13 +36,13 @@ namespace VisualScript.Nodes
 
             bool i = false;
 
-            foreach (Connector c in Manager.Instance.connectors)
+            foreach (InputPort ip in InputPorts)
             {
 
-                if (c.EndPort.OwnerNode == this)
+                if (ip.Connected)
                 {
 
-                    if (!string.IsNullOrEmpty(c.StartPort.OwnerNode.Value) && c.StartPort.OwnerNode.Value != "0")
+                    if (!string.IsNullOrEmpty(ip.Connectors[0].StartPort.OwnerNode.Value) && ip.Connectors[0].StartPort.OwnerNode.Value != "0")
                     {
 
                         i = true;
@@ -68,7 +68,7 @@ namespace VisualScript.Nodes
 
             Rectangle newLocation = Bounds;
             newLocation.Y += 15;
-            e.Graphics.DrawString("Ergebnis: " + (Value == "1" ? "true" : "false"), Control.DefaultFont, Brushes.Black, newLocation);
+            e.Graphics.DrawString(Type.ToString() + ": " + Value, Control.DefaultFont, Brushes.Black, newLocation);
 
             // Draw Input Ports
             foreach (var inputPort in InputPorts)

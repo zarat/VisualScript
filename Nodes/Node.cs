@@ -7,18 +7,33 @@ using VisualScript.Ports;
 using VisualScript;
 using System.Drawing.Drawing2D;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Net.Sockets;
 
 namespace VisualScript.Nodes
 {
+
     [Serializable]
     public class Node : BasicNode
     {
 
-        public override string Name { get; set; } = "Empty Node";
+        public override string Name
+        {
+            get { return base.Name; }
+            set { base.Name = value; }
+        }
 
-        public override string Type { get; set; }
+        public override VariableType Type
+        {
+            get { return base.Type; }
+            set { base.Type = value; }
+        }
 
-        public override string Value { get; set; }
+        public virtual string Value
+        {
+            get { return base.Value; }
+            set { base.Value = value; }
+        }
 
         public override void UpdateValue()
         {
@@ -27,6 +42,8 @@ namespace VisualScript.Nodes
 
         public Node()
         {
+
+            Origin = new Point(60, 60);
 
             // Create a quad by default
             points = new Point[]
@@ -65,8 +82,14 @@ namespace VisualScript.Nodes
             }
 
         }
-  
-        
+
+        protected virtual void OnClientConnect(string client)
+        {
+            ClientConnect?.Invoke(client);
+        }
+
+        public event Action<string> ClientConnect;
+
     }
 
 }

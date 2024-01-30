@@ -12,15 +12,15 @@ namespace VisualScript.Nodes
     public class LowerNode : Node
     {
 
-        public override string Name { get; set; } = "Lower";
-
-        public override string Type { get; set; }
-        public override string Value { get; set; } = "0";
-
         public string testVal { get; set; } = "0";
 
         public LowerNode()
         {
+
+            Name = "Lower Than";
+            Type = VariableType.Boolean;
+            Value = "0";
+
             // Create a quad by default
             points = new Point[]
             {
@@ -45,11 +45,11 @@ namespace VisualScript.Nodes
                 if (c.EndPort.OwnerNode == this)
                 {
 
-                    if (!string.IsNullOrEmpty(c.StartPort.OwnerNode.Value))
+                    if (!string.IsNullOrEmpty(c.StartPort.OwnerNode.Value.ToString()))
                     {
 
                         int x = 0;
-                        bool check = int.TryParse(c.StartPort.OwnerNode.Value, out x);
+                        bool check = int.TryParse(c.StartPort.OwnerNode.Value.ToString(), out x);
                         if (check)
                         {
                             int y = 0;
@@ -84,7 +84,7 @@ namespace VisualScript.Nodes
 
             Rectangle newLocation = Bounds;
             newLocation.Y += 15;
-            e.Graphics.DrawString("Ergebnis: " + Value, Control.DefaultFont, Brushes.Black, newLocation);
+            e.Graphics.DrawString(Type.ToString() + ": " + Value, Control.DefaultFont, Brushes.Black, newLocation);
 
             // Draw Output Ports
             foreach (var inputPort in InputPorts)

@@ -13,13 +13,12 @@ namespace VisualScript.Nodes
     public class ORNode : Node
     {
 
-        [Description("Mindestens eines der Inputs muss positiv sein. Es können auch alle positiv sein.")]
-        public override string Name { get; set; } = "OR";
-        public override string Type { get; set; }
-        public override string Value { get; set; }
-
         public ORNode()
         {
+
+            Name = "OR";
+            Type = VariableType.Boolean;
+            Value = "0";
 
             // Create a quad by default
             points = new Point[]
@@ -36,43 +35,38 @@ namespace VisualScript.Nodes
         public override void UpdateValue()
         {
 
-            bool i = false;
+            bool result = false;
 
-            foreach (Connector c in Manager.Instance.connectors)
+            foreach (InputPort ip in InputPorts)
             {
-
-                if (c.EndPort.OwnerNode == this)
+                if (ip.Connected)
                 {
-
-                    if (!string.IsNullOrEmpty(c.StartPort.OwnerNode.Value) && c.StartPort.OwnerNode.Value != "0")
+                    if (ip.Connectors[0].StartPort.OwnerNode.Value == "1")
                     {
-                        i = true;
+                        result = true;
                         break;
-                    }
-                    else
-                    {
-                        i = false;
                     }
 
                 }
-
             }
 
-            Value = i == true ? "1" : "0";
+            Value = result ? "1" : "0";
 
         }
+
         public override void Paint(object sender, PaintEventArgs e)
         {
 
-            if (Value == "0")
+            if (Value.ToString() == "0")
                 e.Graphics.FillRectangle(Brushes.Red, Bounds);
             else
                 e.Graphics.FillRectangle(Brushes.Green, Bounds);
+
             e.Graphics.DrawString(Name, Control.DefaultFont, Brushes.Black, Bounds.Location);
 
             Rectangle newLocation = Bounds;
             newLocation.Y += 15;
-            e.Graphics.DrawString("Ergebnis: " + (Value == "1" ? "Wahr" : "Falsch"), Control.DefaultFont, Brushes.Black, newLocation);
+            e.Graphics.DrawString(Type.ToString() + ": " + Value, Control.DefaultFont, Brushes.Black, newLocation);
 
             // Draw Input Ports
             foreach (var inputPort in InputPorts)
@@ -85,6 +79,7 @@ namespace VisualScript.Nodes
             {
                 e.Graphics.FillEllipse(Brushes.Red, outputPort.Bounds);
             }
+
         }
 
     }

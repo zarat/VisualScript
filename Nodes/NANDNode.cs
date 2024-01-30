@@ -13,13 +13,13 @@ namespace VisualScript.Nodes
     public class NANDNode : Node
     {
 
-        [Description("Es dürfen nicht alle Inputs positiv sein. Eines oder mehrere dürfen positiv sein.")]
-        public override string Name { get; set; } = "NAND";
-        public override string Type { get; set; }
-        public override string Value { get; set; }
-
         public NANDNode()
         {
+
+            Name = "Not AND";
+            Type = VariableType.Boolean;
+            Value = "0";
+
             // Create a quad by default
             points = new Point[]
             {
@@ -50,7 +50,7 @@ namespace VisualScript.Nodes
 
                     allConnectorsCount++;
 
-                    if (!string.IsNullOrEmpty(c.StartPort.OwnerNode.Value) && c.StartPort.OwnerNode.Value != "0")
+                    if (!string.IsNullOrEmpty(c.StartPort.OwnerNode.Value.ToString()) && c.StartPort.OwnerNode.Value.ToString() != "0")
                     {
                         positiveConnectors++;
                     }
@@ -71,7 +71,7 @@ namespace VisualScript.Nodes
         public override void Paint(object sender, PaintEventArgs e)
         {
 
-            if (Value == "0")
+            if (Value.ToString() == "0")
                 e.Graphics.FillRectangle(Brushes.Red, Bounds);
             else
                 e.Graphics.FillRectangle(Brushes.Green, Bounds);
@@ -80,7 +80,7 @@ namespace VisualScript.Nodes
 
             Rectangle newLocation = Bounds;
             newLocation.Y += 15;
-            e.Graphics.DrawString("Ergebnis: " + (Value == "1" ? "Wahr" : "Falsch"), Control.DefaultFont, Brushes.Black, newLocation);
+            e.Graphics.DrawString(Type.ToString() + ": " + Value, Control.DefaultFont, Brushes.Black, newLocation);
 
             // Draw Input Ports
             foreach (var inputPort in InputPorts)

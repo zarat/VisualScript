@@ -16,13 +16,13 @@ namespace VisualScript.Nodes
     public class XORNode : Node
     {
 
-        [Description("Nur eines der Inputs darf positiv sein.")]
-        public override string Name { get; set; } = "XOR";
-        public override string Type { get; set; }
-        public override string Value { get; set; }
-
         public XORNode()
         {
+
+            Name = "Exclusive OR";
+            Type = VariableType.Boolean;
+            Value = "0";
+
             // Create a quad by default
             points = new Point[]
             {
@@ -51,7 +51,7 @@ namespace VisualScript.Nodes
 
                     allInputs++;
 
-                    if (!string.IsNullOrEmpty(c.StartPort.OwnerNode.Value) && c.StartPort.OwnerNode.Value != "0")
+                    if (!string.IsNullOrEmpty(c.StartPort.OwnerNode.Value.ToString()) && c.StartPort.OwnerNode.Value.ToString() != "0")
                     {
                         positiveInputs++;
                         
@@ -76,7 +76,7 @@ namespace VisualScript.Nodes
         public override void Paint(object sender, PaintEventArgs e)
         {
 
-            if (Value == "0")
+            if (Value.ToString() == "0")
                 e.Graphics.FillRectangle(Brushes.Red, Bounds);
             else
                 e.Graphics.FillRectangle(Brushes.Green, Bounds);
@@ -84,7 +84,7 @@ namespace VisualScript.Nodes
 
             Rectangle newLocation = Bounds;
             newLocation.Y += 15;
-            e.Graphics.DrawString("Ergebnis: " + (Value == "1" ? "Wahr" : "Falsch"), Control.DefaultFont, Brushes.Black, newLocation);
+            e.Graphics.DrawString(Type.ToString() + ": " + Value, Control.DefaultFont, Brushes.Black, newLocation);
 
             // Draw Input Ports
             foreach (var inputPort in InputPorts)

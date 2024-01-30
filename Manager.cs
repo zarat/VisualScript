@@ -16,9 +16,19 @@ namespace VisualScript
     public class Manager
     {
 
+        /// <summary>
+        /// The manager is a singleton. Only a single instance exists.
+        /// </summary>
         private static Manager instance;
 
+        /// <summary>
+        /// A List of <seealso cref="BasicNode"/>s that are present in the current scene. 
+        /// </summary>
         public List<BasicNode> nodes;
+
+        /// <summary>
+        /// A List of <seealso cref="Connector"/>s that are present in the current scene. 
+        /// </summary>
         public List<Connector> connectors;
 
         public Manager()
@@ -43,7 +53,7 @@ namespace VisualScript
         }
 
         /// <summary>
-        /// Render connectors and nodes
+        /// Render all the <seealso cref="Connector"/>s and <seealso cref="BasicNode"/>s that are present in the current scene.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -59,6 +69,11 @@ namespace VisualScript
             }
         }
 
+        /// <summary>
+        /// Connect 2 <seealso cref="Port"/>s together.
+        /// </summary>
+        /// <param name="startPort"></param>
+        /// <param name="endPort"></param>
         public void ConnectPorts(Port startPort, Port endPort)
         {
             if (endPort is OutputPort || startPort is InputPort)
@@ -66,16 +81,31 @@ namespace VisualScript
                 MessageBox.Show("Eine Verbindung muss von einem blauen Input starten und bei einem roten Output enden.");
                 return;
             }
+
+            if(endPort.Connected)
+            {
+                MessageBox.Show("Nur eine Verbindung pro Port.");
+                return;
+            }
+
+            Connector c = new Connector { StartPort = startPort, EndPort = endPort };
+
+            connectors.Add(c);
+
             startPort.Connected = true;
             endPort.Connected = true;
-            connectors.Add(new Connector { StartPort = startPort, EndPort = endPort });
+
+            startPort.Connectors.Add(c);
+            endPort.Connectors.Add(c);
+
             UpdateValues();
             UpdateConnectors();
         }
 
         /// <summary>
-        /// Make it good
+        /// Legacy
         /// </summary>
+        /// \todo 
         public void UpdateConnectors()
         {
 
@@ -97,6 +127,9 @@ namespace VisualScript
 
         }
 
+        /// <summary>
+        /// Call the <seealso cref="Node.UpdateValue"/> method on each nodes in the current scene.
+        /// </summary>
         public void UpdateValues()
         {
             foreach (BasicNode n in nodes)
@@ -105,6 +138,12 @@ namespace VisualScript
             }
         }
 
+        /// <summary>
+        /// Get a List of all <seealso cref="BasicNode"/>s at a specific <seealso cref="Point"/> on screen.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <returns></returns>
         public List<BasicNode> MatchNode(object sender, MouseEventArgs e)
         {
             List<BasicNode> list = new List<BasicNode>();
