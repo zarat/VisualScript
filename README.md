@@ -1,5 +1,5 @@
 # VisualScript
 
-Work in progress. It will become some visual scripting or automation framework.
+Work in progress.
 
 ![Demo Image](Demo.png)
